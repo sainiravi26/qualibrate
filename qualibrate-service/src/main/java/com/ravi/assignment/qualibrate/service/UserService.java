@@ -53,7 +53,7 @@ public class UserService {
         //        String fileType = multipartFile.
         //        if (!allowedFileTypes.contains(fileType)) {
         //
-        //        }
+        //        } 
 
         Optional<User> user = userRepository.findById(userId);
         if (user.isPresent()) {

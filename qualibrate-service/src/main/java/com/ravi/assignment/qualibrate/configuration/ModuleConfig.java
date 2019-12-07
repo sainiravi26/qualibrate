@@ -1,6 +1,8 @@
 package com.ravi.assignment.qualibrate.configuration;
 
-import com.ravi.assignment.qualibrate.service.FileService;
+import com.ravi.assignment.qualibrate.domain.repository.UserRepository;
+import com.ravi.assignment.qualibrate.service.DiskFileStorageService;
+import com.ravi.assignment.qualibrate.service.UserMapper;
 import com.ravi.assignment.qualibrate.service.UserService;
 
 import org.springframework.context.annotation.Bean;
@@ -10,14 +12,15 @@ import org.springframework.context.annotation.Configuration;
 public class ModuleConfig {
 
     @Bean
-    UserService getUserService() {
+    DiskFileStorageService getDiskFileStorageService() {
 
-        return new UserService();
+        return new DiskFileStorageService();
     }
 
     @Bean
-    FileService getFileService() {
+    UserService getUserService(UserRepository userRepository, UserMapper userMapper,
+            DiskFileStorageService diskFileStorageService) {
 
-        return new FileService();
+        return new UserService(userRepository, userMapper, diskFileStorageService);
     }
 }

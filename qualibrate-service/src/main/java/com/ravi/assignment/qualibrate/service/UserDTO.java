@@ -15,13 +15,12 @@ public class UserDTO implements IdAware {
 
     @Schema(description = "First name of user",
             example = "John", required = true)
-    @Pattern(regexp = "^[a-zA-Z]")
-    @NotBlank
+    @Pattern(regexp = "^[A-Za-z]*")
     private String firstName;
 
     @Schema(description = "Last name of user",
             example = "Smith", required = true)
-    @Pattern(regexp = "^[a-zA-Z]")
+    @Pattern(regexp = "^[A-Za-z]*")
     @NotBlank
     private String lastName;
 

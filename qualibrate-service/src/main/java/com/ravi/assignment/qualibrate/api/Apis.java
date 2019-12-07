@@ -52,6 +52,7 @@ public class Apis {
         try {
             user = userService.createUser(user);
         } catch (DataIntegrityViolationException e) {
+            e.printStackTrace();
             throw e;
         }
         return created(user);

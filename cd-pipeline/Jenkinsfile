@@ -1,10 +1,87 @@
 pipeline {
      agent any
+     
+     tools{
+        maven 'maven'
+        jdk 'jdk8'
+     }
+     
+     environment {
+        VERSION = 'latest'
+        PROJECT = 'qualibrate_service'
+        IMAGE = 'qualibrate_service:latest'
+        ECRURL = 'http://236587623411.dkr.ecr.eu-central-1.amazonaws.com'
+        ECRCRED = 'ecr:eu-central-1:qualibrate-service'
+    }
+ 
      stages {
+          stage ("initialize") {
+               steps {
+                    sh '''
+                    echo "PATH = ${PATH}"
+                    echo "M2_HOME = ${M2_HOME}"
+                       '''
+                }        
+          }
           stage("Checkout") {
                steps {
-                    git url: 'https://github.com/sainiravi26/qualibrate.git'
+                    git branch: 'master', url: 'https://github.com/sainiravi26/qualibrate.git'
                }
+          }
+          
+          stage('Compile') {
+                steps {
+                    dir("qualibrate-service"){
+                        echo "-=- compiling project -=-"
+                        sh "mvn clean compile"
+                    }
+                }
+          }
+          
+          stage('Unit tests') {
+                steps {
+                    dir("qualibrate-service"){
+                        echo "-=- compiling project -=-"
+                        sh "mvn clean install"
+                    }
+                }
+          }
+          
+          stage('Version preparations'){
+                steps{
+                    script{
+                        // calculate GIT lastest commit short-hash
+                        gitCommitHash = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
+                        shortCommitHash = gitCommitHash.take(7)
+                        // calculate a sample version tag
+                        VERSION = shortCommitHash
+                        // set the build display name
+                        currentBuild.displayName = "#${BUILD_ID}-${VERSION}"
+                        IMAGE = "$PROJECT:$VERSION"
+                    }
+                }
+          }
+          
+          stage('Build Docker Image') {
+                steps {
+                    script{
+                       // Build the docker image using a Dockerfile
+                        docker.build("$IMAGE","cd-pipeline")
+                    }
+                }
+          }
+
+          stage('Push Docker Image to ECR') {
+                steps{
+                    script{
+                        // login to ECR - for now it seems that that the ECR Jenkins plugin is not performing the login as expected. I hope it will in the future.
+                        //sh("eval $(aws ecr get-login --no-include-email | sed 's|https://||')")
+                        // Push the Docker image to ECR
+                        docker.withRegistry(ECRURL, ECRCRED){
+                            docker.image(IMAGE).push()
+                        }
+                    }
+                }
           }
      }
 }

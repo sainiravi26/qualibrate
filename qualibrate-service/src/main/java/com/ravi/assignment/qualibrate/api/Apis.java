@@ -2,8 +2,10 @@ package com.ravi.assignment.qualibrate.api;
 
 import static com.ravi.assignment.qualibrate.api.ResponseEntityBuilder.created;
 
+import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.http.ResponseEntity.noContent;
 import static org.springframework.http.ResponseEntity.notFound;
+import static org.springframework.http.ResponseEntity.ok;
 
 import com.ravi.assignment.qualibrate.service.FileDTO;
 import com.ravi.assignment.qualibrate.service.FileService;
@@ -63,10 +65,10 @@ public class Apis {
     public ResponseEntity<Object> createUser(@Valid @RequestBody UserDTO user) {
 
         try {
-            user = userService.createUser(user);
+            user = userService.createOrUpdateUser(user);
         } catch (DataIntegrityViolationException e) {
             e.printStackTrace();
-            return ResponseEntity.badRequest().body("Data Integrity violation");
+            return badRequest().body("Data Integrity violation");
         }
         return created(user);
     }
@@ -78,7 +80,7 @@ public class Apis {
             @ApiResponse(responseCode = "404", description = "User not found", content = {
                     @Content(schema = @Schema(implementation = Void.class)) })
     })
-    @GetMapping(path = "/{id}")
+    @GetMapping(path = "/{id}", produces = { "application/json" })
     public ResponseEntity<UserDTO> getUser(@PathVariable Long id) {
 
         Optional<UserDTO> user = userService.getUser(id);
@@ -88,7 +90,7 @@ public class Apis {
     @Operation(summary = "List all users", description = "Returns a collection of users paginated and consolidated"
             + "        in bundles of 10 (by default) per page")
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Users list") })
-    @GetMapping
+    @GetMapping(produces = { "application/json" })
     public PageResult<UserDTO> getUsers(@RequestParam(value = "page", required = false, defaultValue = "0") int page,
             @RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize) {
 
@@ -112,20 +114,32 @@ public class Apis {
         return notFound().build();
     }
 
-    @Operation(summary = "Updates or create a new user", description = "It uses the email as a primarily identifier of the user")
+    @Operation(summary = "Updates existing user or create a new user if it does not exist",
+            description = "It uses the email as a primarily identifier of the user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "User is successfully created", headers = {
-                    @Header(name = "location", description = "Location of created user resource") }) })
+                    @Header(name = "location", description = "Location of created user resource") }, content = {
+                    @Content(schema = @Schema(implementation = UserDTO.class)) }),
+            @ApiResponse(responseCode = "200", description = "User is successfully updated", content = {
+                    @Content(schema = @Schema(implementation = UserDTO.class)) }),
+            @ApiResponse(responseCode = "400", description = "Integrity violation", content = {
+                    @Content(schema = @Schema(implementation = String.class)) }) })
     @PutMapping(path = "/{id}", consumes = { "application/json" }, produces = { "application/json" })
-    public ResponseEntity<Object> createOrUpdateUser(@Valid @RequestBody UserDTO user) {
+    public ResponseEntity<Object> createOrUpdateUser(@PathVariable Long id, @Valid @RequestBody UserDTO user) {
 
         try {
-            user = userService.createUser(user);
+            user.setId(id);
+            Optional<UserDTO> existingUser = userService.getUser(id);
+            user = userService.createOrUpdateUser(user);
+            if (existingUser.isPresent()) {
+                return ok(user);
+            } else {
+                return created(user, false);
+            }
         } catch (DataIntegrityViolationException e) {
             e.printStackTrace();
-            return ResponseEntity.badRequest().body("Data Integrity violation");
+            return badRequest().body("Data Integrity violation");
         }
-        return created(user);
     }
 
     @Operation(summary = "Uploads a new file", description =
@@ -146,7 +160,7 @@ public class Apis {
         try {
             fileDTO = fileService.createFile(userId, file);
         } catch (InvalidFileTypeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return badRequest().body(e.getMessage());
         } catch (ResourceNotFoundException e) {
             return notFound().build();
         } catch (IOException e) {
@@ -158,13 +172,14 @@ public class Apis {
     @Operation(summary = " Fetch all the files for an individual user", description =
             "  Retrieve all reference files that belong to this user, it includes attachments, images, references and all the files")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = " A list of files that belong to a particular user"),
-            @ApiResponse(responseCode = "404", description = "User not found") })
+            @ApiResponse(responseCode = "200", description = " A list of files that belong to a user"),
+            @ApiResponse(responseCode = "404", description = "User not found", content = {
+                    @Content(schema = @Schema(implementation = Void.class)) }) })
     @GetMapping(path = "/{userId}/files", produces = { "application/json" })
     public ResponseEntity<PageResult<FileDTO>> getUserFiles(@PathVariable Long userId) {
 
         try {
-            return ResponseEntity.ok(fileService.getUserFiles(userId));
+            return ok(fileService.getUserFiles(userId));
         } catch (ResourceNotFoundException e) {
             return notFound().build();
         }

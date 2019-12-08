@@ -22,7 +22,7 @@ public class UserService {
         this.fileService = fileService;
     }
 
-    public UserDTO createUser(UserDTO user) {
+    public UserDTO createOrUpdateUser(UserDTO user) {
 
         return userMapper.userToUserDTO(userRepository.save(userMapper.userDTOToUser(user)));
     }

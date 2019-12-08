@@ -11,11 +11,20 @@ public final class ResponseEntityBuilder {
 
     public static <T extends IdAware> ResponseEntity<Object> created(T createdEntity) {
 
+        return created(createdEntity, true);
+    }
+
+    public static <T extends IdAware> ResponseEntity<Object> created(T createdEntity, boolean addIdPath) {
+
         // Create resource location
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(createdEntity.getId())
-                .toUri();
+        ServletUriComponentsBuilder uriComponentsBuilder = ServletUriComponentsBuilder.fromCurrentRequest();
+        URI location;
+        if (addIdPath) {
+            location = uriComponentsBuilder.path("/{id}")
+                    .buildAndExpand(createdEntity.getId()).toUri();
+        } else {
+            location = uriComponentsBuilder.build().toUri();
+        }
         //Send location in response
         return ResponseEntity.created(location).body(createdEntity);
     }

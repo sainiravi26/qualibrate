@@ -14,7 +14,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "files")
-public class File implements IdAware {
+public class File {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

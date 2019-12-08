@@ -17,6 +17,6 @@ public final class ResponseEntityBuilder {
                 .buildAndExpand(createdEntity.getId())
                 .toUri();
         //Send location in response
-        return ResponseEntity.created(location).build();
+        return ResponseEntity.created(location).body(createdEntity);
     }
 }

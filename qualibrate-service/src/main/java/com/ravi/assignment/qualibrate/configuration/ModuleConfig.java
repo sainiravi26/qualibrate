@@ -49,7 +49,7 @@ public class ModuleConfig {
         MimetypesFileTypeMap fileTypeMap = new MimetypesFileTypeMap();
         // add additional file types
         fileTypeMap.addMimeTypes("application/json json");
-        fileTypeMap.addMimeTypes("image/png PNG");
+        fileTypeMap.addMimeTypes("image/png PNG png");
         fileTypeMap.addMimeTypes("application/pdf pdf PDF");
         return fileTypeMap;
     }

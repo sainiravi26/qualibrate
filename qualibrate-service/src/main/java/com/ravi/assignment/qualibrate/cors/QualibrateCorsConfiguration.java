@@ -36,7 +36,7 @@ public class QualibrateCorsConfiguration extends CorsConfiguration {
                 Pattern pattern = Pattern.compile(allowedOrigin);
                 Matcher matcher = pattern.matcher(requestOrigin);
                 if (matcher.matches()) {
-                    return allowedOrigin;
+                    return requestOrigin;
                 }
             }
         }

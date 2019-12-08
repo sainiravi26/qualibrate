@@ -1,31 +1,25 @@
 package com.ravi.assignment.qualibrate.service;
 
-import com.ravi.assignment.qualibrate.domain.File;
 import com.ravi.assignment.qualibrate.domain.User;
 import com.ravi.assignment.qualibrate.domain.repository.UserRepository;
 
-import java.io.IOException;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Transactional
 public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final FileStorageService fileStorageService;
+    private final FileService fileService;
 
-    //private Set<String> allowedFileTypes = .newHashSet("image/png", "application/pdf", "image/jpeg", "image/gif", "text/plain");
-
-    public UserService(UserRepository userRepository, UserMapper userMapper, FileStorageService fileStorageService) {
+    public UserService(UserRepository userRepository, UserMapper userMapper, FileService fileService) {
 
         this.userRepository = userRepository;
         this.userMapper = userMapper;
-        this.fileStorageService = fileStorageService;
+        this.fileService = fileService;
     }
 
     public UserDTO createUser(UserDTO user) {
@@ -42,27 +36,20 @@ public class UserService {
         return Optional.empty();
     }
 
+    public boolean deleteUser(Long id) {
+
+        Optional<User> user = userRepository.findById(id);
+        if (user.isPresent()) {
+            userRepository.delete(user.get());
+            fileService.deleteUserFiles(user.get());
+            return true;
+        }
+        return false;
+    }
+
     public PageResult<UserDTO> findUsers(int page, int pageSize) {
 
         return new PageResult<>(
                 userRepository.findAll(PageRequest.of(page, pageSize)).map(user -> userMapper.userToUserDTO(user)).toList());
-    }
-
-    public FileDTO createFile(Long userId, MultipartFile multipartFile) throws IOException {
-
-        //        String fileType = multipartFile.
-        //        if (!allowedFileTypes.contains(fileType)) {
-        //
-        //        }
-
-        Optional<User> user = userRepository.findById(userId);
-        if (user.isPresent()) {
-            File file = new File();
-            file.setName(multipartFile.getOriginalFilename());
-            file.setUuid(UUID.randomUUID());
-            file.setPath(fileStorageService.store(file.getUuid(), multipartFile));
-        }
-
-        return null;
     }
 }

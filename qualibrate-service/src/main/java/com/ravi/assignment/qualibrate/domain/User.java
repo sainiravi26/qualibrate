@@ -9,7 +9,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "users")
-public class User implements IdAware {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -24,7 +24,6 @@ public class User implements IdAware {
     @Column(name = "email", nullable = false, unique = true, length = 50)
     private String email;
 
-    @Override
     public Long getId() {
 
         return id;

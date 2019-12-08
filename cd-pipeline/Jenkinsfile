@@ -8,10 +8,10 @@ pipeline {
      
      environment {
         VERSION = 'latest'
-        PROJECT = 'qualibrate_service'
-        IMAGE = 'qualibrate_service:latest'
+        PROJECT = 'qualibrate-service'
+        IMAGE = 'qualibrate-service:latest'
         ECRURL = 'http://236587623411.dkr.ecr.eu-central-1.amazonaws.com'
-        ECRCRED = 'ecr:eu-central-1:qualibrate-service'
+        ECRCRED = 'ecr:eu-central-1:ecr'
     }
  
      stages {
@@ -54,10 +54,11 @@ pipeline {
                         gitCommitHash = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
                         shortCommitHash = gitCommitHash.take(7)
                         // calculate a sample version tag
-                        VERSION = shortCommitHash
+                        // VERSION = shortCommitHash
                         // set the build display name
                         currentBuild.displayName = "#${BUILD_ID}-${VERSION}"
                         IMAGE = "$PROJECT:$VERSION"
+                        sh 'cp ./qualibrate-service/target/qualibrate-service-0.0.1-SNAPSHOT.jar cd-pipeline'
                     }
                 }
           }
@@ -75,9 +76,10 @@ pipeline {
                 steps{
                     script{
                         // login to ECR - for now it seems that that the ECR Jenkins plugin is not performing the login as expected. I hope it will in the future.
-                        //sh("eval $(aws ecr get-login --no-include-email | sed 's|https://||')")
+                           sh("eval \$(aws ecr get-login --region eu-central-1 --no-include-email | sed 's|https://||')")
                         // Push the Docker image to ECR
-                        docker.withRegistry(ECRURL, ECRCRED){
+                        // docker.withRegistry(ECRURL, ECRCRED){
+                           docker.withRegistry(ECRURL){
                             docker.image(IMAGE).push()
                         }
                     }

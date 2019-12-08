@@ -6,8 +6,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class QualibrateApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+    @Test
+    void startup_test() {
 
+    }
 }

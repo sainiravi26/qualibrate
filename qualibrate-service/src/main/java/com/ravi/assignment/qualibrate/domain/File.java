@@ -17,7 +17,7 @@ import javax.persistence.Table;
 public class File {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @Column(name = "uuid", nullable = false, length = 36)

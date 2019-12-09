@@ -1,0 +1,1 @@
+newman run user_apis.postman_collection.json -d user_apis.json -e qualibrate-api-env.postman_environment.json --reporters cli,json --reporter-json-export user_apis.outputfile.json --bail newman

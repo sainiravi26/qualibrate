@@ -1,0 +1,67 @@
+[
+    {
+        "createUserRequest": {
+            "firstName": "Ravi",
+            "lastName": "Saini",
+            "email": "sainiravi26@gmail.com"
+        },
+        "updateUserRequest": {
+            "firstName": "r",
+            "lastName": "s",
+            "email": "sainiravi26@gmail.com"
+        },
+        "addFileRequest": {
+            "fileName": "Qualibrate Code Challenge 2019.pdf"
+        },
+        "createUserBatch": [
+            {
+                "firstName": "a",
+                "lastName": "a",
+                "email": "a.a@gmail.com"
+            },
+            {
+                "firstName": "b",
+                "lastName": "b",
+                "email": "b.b@gmail.com"
+            },
+            {
+                "firstName": "c",
+                "lastName": "c",
+                "email": "c.c@gmail.com"
+            },
+            {
+                "firstName": "d",
+                "lastName": "d",
+                "email": "d.d@gmail.com"
+            },
+            {
+                "firstName": "e",
+                "lastName": "e",
+                "email": "e.e@gmail.com"
+            },
+            {
+                "firstName": "f",
+                "lastName": "f",
+                "email": "f.f@gmail.com"
+            },
+            {
+                "firstName": "g",
+                "lastName": "g",
+                "email": "g.g@gmail.com"
+            }
+        ],
+        "usersPageRequest":[
+            {
+                "page": 0,
+                "pageSize": 5,
+                "resultSize": 5 
+            },
+            {
+                "page": 1,
+                "pageSize": 5,
+                "resultSize": 2 
+            }
+        ]
+    }
+]
+    

@@ -36,6 +36,20 @@ public class FileService {
         fileRepository.deleteByUser(user.getId());
     }
 
+    public Optional<FileDTO> getFile(Long userId, Long fileId) {
+
+        Optional<User> user = userRepository.findById(userId);
+        // only check if user is present
+        if (user.isPresent()) {
+            Optional<File> file = fileRepository.findById(fileId);
+            if (file.isPresent()) {
+                return Optional.of(fileMapper.fileToFileDTO(file.get()));
+            }
+            return Optional.empty();
+        }
+        throw new ResourceNotFoundException(String.format("User with id  %d not found", userId));
+    }
+
     public PageResult<FileDTO> getUserFiles(Long userId) {
 
         Optional<User> user = userRepository.findById(userId);

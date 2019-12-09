@@ -1,0 +1,526 @@
+{
+	"info": {
+		"_postman_id": "498f69dc-a2ba-4895-8474-ad1a673a3d2c",
+		"name": "user_apis",
+		"description": "Qualibrate api test to create users",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "cc37ff44-405a-4c76-85a5-f6a981f55248",
+						"exec": [
+							"pm.test(\"Verify status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"location header is present\", function () {",
+							"    pm.response.to.have.header(\"location\");",
+							"});",
+							"",
+							"pm.test(\"Verify user creation response\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.firstName).to.eql(data.createUserRequest.firstName);",
+							"    pm.expect(jsonData.lastName).to.eql(data.createUserRequest.lastName);",
+							"    pm.expect(jsonData.email).to.eql(data.createUserRequest.email);",
+							"});",
+							"",
+							"pm.environment.set(\"userLocation\", pm.response.headers.get(\"location\"));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "e530606e-a739-48ea-a26e-b23fe17e9724",
+						"exec": [
+							"// Dynamically build up the request body",
+							"var json = ",
+							"{firstName: data.createUserRequest.firstName",
+							",lastName: data.createUserRequest.lastName",
+							",email: data.createUserRequest.email",
+							"};",
+							"",
+							"// Store request",
+							"pm.environment.set(\"userPostBody\", JSON.stringify(json));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{{userPostBody}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{server_url}}:{{server_port}}/users",
+					"host": [
+						"{{server_url}}"
+					],
+					"port": "{{server_port}}",
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f60ad3c4-6dd7-444b-abb5-91ca355ebc95",
+						"exec": [
+							"pm.test(\"Verify status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Verify user response\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.firstName).to.eql(data.createUserRequest.firstName);",
+							"    pm.expect(jsonData.lastName).to.eql(data.createUserRequest.lastName);",
+							"    pm.expect(jsonData.email).to.eql(data.createUserRequest.email);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{userLocation}}",
+					"host": [
+						"{{userLocation}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update User",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "671a5dde-d272-4ea7-824b-f0f6228791f4",
+						"exec": [
+							"// Dynamically build up the request body",
+							"var json = ",
+							"{firstName: data.updateUserRequest.firstName",
+							",lastName: data.updateUserRequest.lastName",
+							",email: data.updateUserRequest.email",
+							"};",
+							"",
+							"// Store request",
+							"pm.environment.set(\"updatedUserBody\", JSON.stringify(json));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "dc3e0640-8b02-44cd-a669-3af721f7c83a",
+						"exec": [
+							"pm.test(\"Verify status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Verify user creation response\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.firstName).to.eql(data.updateUserRequest.firstName);",
+							"    pm.expect(jsonData.lastName).to.eql(data.updateUserRequest.lastName);",
+							"    pm.expect(jsonData.email).to.eql(data.updateUserRequest.email);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{{updatedUserBody}}"
+				},
+				"url": {
+					"raw": "{{userLocation}}",
+					"host": [
+						"{{userLocation}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add File",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "bfeeaf1a-ff69-4260-8e91-f478059df419",
+						"exec": [
+							"pm.test(\"Verify status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"location header is present\", function () {",
+							"    pm.response.to.have.header(\"location\");",
+							"});",
+							"",
+							"pm.test(\"Verify file creation response\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.uuid).not.equal(null);",
+							"    pm.expect(jsonData.name).not.equal(null);",
+							"    pm.expect(jsonData.path).not.equal(null);",
+							"    pm.expect(jsonData.mime).not.equal(null);",
+							"});",
+							"",
+							"pm.environment.set(\"fileLocation\", pm.response.headers.get(\"location\"));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "ad722c84-d910-478e-91ff-b1cfe5dae019",
+						"exec": [
+							"pm.environment.set(\"fileName\", data.addFileRequest.fileName);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "{{fileName}}"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{userLocation}}/files",
+					"host": [
+						"{{userLocation}}"
+					],
+					"path": [
+						"files"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get File",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f60ad3c4-6dd7-444b-abb5-91ca355ebc95",
+						"exec": [
+							"pm.test(\"Verify status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Verify file creation response\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.uuid).not.equal(null);",
+							"    pm.expect(jsonData.name).not.equal(null);",
+							"    pm.expect(jsonData.path).not.equal(null);",
+							"    pm.expect(jsonData.mime).not.equal(null);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{fileLocation}}",
+					"host": [
+						"{{fileLocation}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get User Files",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f60ad3c4-6dd7-444b-abb5-91ca355ebc95",
+						"exec": [
+							"pm.test(\"Verify status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Verify file creation response\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.items.length).to.eql(1);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{userLocation}}/files",
+					"host": [
+						"{{userLocation}}"
+					],
+					"path": [
+						"files"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "c0e0b1e3-34b7-48b4-a0b7-9de23c9f5f47",
+						"exec": [
+							"pm.test(\"Verify status code is 204\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{userLocation}}",
+					"host": [
+						"{{userLocation}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Users Batch",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "045406c4-aef5-464f-9bc5-2a5acede0210",
+						"exec": [
+							"var userBatchCount = pm.environment.get(\"userBatchCount\");",
+							"if(userBatchCount === undefined) {",
+							"    userBatchCount=0;",
+							"} else {",
+							"    userBatchCount++;",
+							"}",
+							"",
+							"var json = ",
+							"{firstName: data.createUserBatch[userBatchCount].firstName",
+							",lastName: data.createUserBatch[userBatchCount].lastName",
+							",email: data.createUserBatch[userBatchCount].email",
+							"};",
+							"",
+							"if(userBatchCount < (data.createUserBatch.length-1)) {",
+							"    postman.setNextRequest(\"Create Users Batch\");",
+							"}",
+							"",
+							"pm.environment.set(\"userBatchCount\", userBatchCount);",
+							"",
+							"// Store request",
+							"pm.environment.set(\"batchUserBody\", JSON.stringify(json));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "3c2cfc2d-d8a7-443a-9496-9f2db35d7a29",
+						"exec": [
+							"pm.test(\"Verify status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{{batchUserBody}}"
+				},
+				"url": {
+					"raw": "{{server_url}}:{{server_port}}/users",
+					"host": [
+						"{{server_url}}"
+					],
+					"port": "{{server_port}}",
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Users Page",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "cebce0b2-d965-40bb-a3ea-c29cdd911ed9",
+						"exec": [
+							"var getUsersBatchCount = pm.environment.get(\"getUsersBatchCount\");",
+							"if(getUsersBatchCount === undefined) {",
+							"    getUsersBatchCount=0;",
+							"} else {",
+							"    getUsersBatchCount++;",
+							"}",
+							"",
+							"if(getUsersBatchCount < (data.usersPageRequest.length-1)) {",
+							"    postman.setNextRequest(\"Get Users Page\");",
+							"}",
+							"",
+							"pm.environment.set(\"getUsersBatchCount\", getUsersBatchCount);",
+							"",
+							"// Store request",
+							"pm.environment.set(\"page\", data.usersPageRequest[getUsersBatchCount].page);",
+							"pm.environment.set(\"pageSize\", data.usersPageRequest[getUsersBatchCount].pageSize);",
+							"pm.environment.set(\"resultSize\", data.usersPageRequest[getUsersBatchCount].resultSize);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "fb9b4207-2f31-4921-9fb9-7d2e2866d92e",
+						"exec": [
+							"pm.test(\"Verify status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Verify number of users in response\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.items.length).to.eql(pm.environment.get(\"resultSize\"));",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{server_url}}:{{server_port}}/users?page={{page}}&pageSize={{pageSize}}",
+					"host": [
+						"{{server_url}}"
+					],
+					"port": "{{server_port}}",
+					"path": [
+						"users"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "{{page}}"
+						},
+						{
+							"key": "pageSize",
+							"value": "{{pageSize}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "5c121170-7e1e-4eda-88d4-90c7a3f6685e",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "8b98450e-60b2-49d4-bf2d-680b21ca331a",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}

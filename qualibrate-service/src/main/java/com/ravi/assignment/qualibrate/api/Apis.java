@@ -184,4 +184,18 @@ public class Apis {
             return notFound().build();
         }
     }
+
+    @Operation(summary = "Fetch a file by user id and file id", description = "File is assigned a unique identifier")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Returns file matching to the fileId and user id", content = {
+                    @Content(schema = @Schema(implementation = FileDTO.class)) }),
+            @ApiResponse(responseCode = "404", description = "User or File not found", content = {
+                    @Content(schema = @Schema(implementation = Void.class)) })
+    })
+    @GetMapping(path = "/{userId}/files/{fileId}", produces = { "application/json" })
+    public ResponseEntity<FileDTO> getFile(@PathVariable Long userId, @PathVariable Long fileId) {
+
+        Optional<FileDTO> file = fileService.getFile(userId, fileId);
+        return ResponseEntity.of(file);
+    }
 }
